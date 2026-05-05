@@ -355,7 +355,7 @@
       </div>
 
       <div class="field" id="f-email">
-        <label for="i-email">E-Mail <span class="opt">(optional — für Statusbenachrichtigungen)</span></label>
+        <label for="i-email">E-Mail <span class="opt">(optional — für Statusbenachrichtigungen und Rückfragen)</span></label>
         <input type="email" id="i-email" name="email"
                placeholder="ihre@email.de" autocomplete="email" inputmode="email">
         <div class="field-err">Bitte geben Sie eine gültige E-Mail-Adresse ein.</div>
@@ -366,7 +366,8 @@
           <input type="checkbox" id="i-consent" name="consent">
           <label for="i-consent">
             Ich bin einverstanden, dass meine E-Mail-Adresse von bitside GmbH gespeichert und
-            ausschließlich zur Benachrichtigung über den Status dieses Anliegens verwendet wird.
+            zur Benachrichtigung über den Status dieses Anliegens sowie zur Kontaktaufnahme
+            durch bitside GmbH zu unseren Produkten und Dienstleistungen verwendet wird.
             Diese Einwilligung kann ich jederzeit widerrufen.
             Weitere Informationen finden Sie in unserer
             <a href="https://bitside.de/impressum" target="_blank" rel="noopener">Datenschutzerklärung</a>.
@@ -388,7 +389,7 @@
       <p>Ihr Fall wurde erfolgreich eingereicht.</p>
       <p>Unser KI-System nimmt ihn jetzt in die Warteschlange auf.</p>
       <div class="email-note" id="s-email-note">
-        Wir benachrichtigen Sie unter <strong id="s-email"></strong> über den Fortschritt.
+        Wir können Sie unter <strong id="s-email"></strong> über den Fortschritt informieren und bei Bedarf Kontakt aufnehmen.
       </div>
     </div>
 
@@ -496,8 +497,8 @@
     }
 
     // ── Submit ──────────────────────────────────────────────────────────────
-    const CONSENT_TEXT    = 'Ich bin einverstanden, dass meine E-Mail-Adresse von bitside GmbH gespeichert und ausschließlich zur Benachrichtigung über den Status dieses Anliegens verwendet wird. Diese Einwilligung kann ich jederzeit widerrufen.';
-    const CONSENT_VERSION = '1.0';
+    const CONSENT_TEXT    = 'Ich bin einverstanden, dass meine E-Mail-Adresse von bitside GmbH gespeichert und zur Benachrichtigung über den Status dieses Anliegens sowie zur Kontaktaufnahme durch bitside GmbH zu unseren Produkten und Dienstleistungen verwendet wird. Diese Einwilligung kann ich jederzeit widerrufen.';
+    const CONSENT_VERSION = '1.1';
 
     document.getElementById('form').addEventListener('submit', async function (e) {
       e.preventDefault();
