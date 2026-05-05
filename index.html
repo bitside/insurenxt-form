@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InsureNXT – Fall einreichen</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0c0e14;
+      --surface:    #161923;
+      --surface2:   #1d2130;
+      --border:     #2b2f3f;
+      --primary:    #FFD663;
+      --btn-bg:     #FFD663;
+      --btn-text:   #0c0e14;
+      --text:       #dde0eb;
+      --muted:      #5f6478;
+      --success:    #5a9e3a;
+      --success-bg: #182815;
+      --danger:     #d94040;
+      --danger-bg:  #2b1818;
+      --radius:     10px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg:         #f0f2f8;
+        --surface:    #ffffff;
+        --surface2:   #f4f6fc;
+        --border:     #d0d4e4;
+        --primary:    #b8870a;
+        --btn-bg:     #FFD663;
+        --btn-text:   #0c0e14;
+        --text:       #1a1d2e;
+        --muted:      #737894;
+        --success:    #2d7018;
+        --success-bg: #eaf5e5;
+        --danger:     #c02020;
+        --danger-bg:  #fdf0f0;
+      }
+      .card { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+      .field select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23737894' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+      }
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+      max-width: 480px;
+      width: 100%;
+    }
+    .wordmark {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+    }
+    .wordmark span { color: var(--text); font-weight: 400; }
+    .tagline {
+      margin-top: 0.2rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 2rem 1.5rem;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    /* ── Avatar ── */
+    .avatar-wrap { display: flex; justify-content: center; margin-bottom: 1.75rem; }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      user-select: none;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .avatar.filled { border-color: transparent; }
+
+    /* ── Fields ── */
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+    }
+    .field label .opt {
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.75rem;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      padding: 0.75rem 1rem;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%235f6478' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+    .field select option { background: var(--surface2); }
+    .field textarea { resize: vertical; min-height: 120px; }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,214,99,0.12);
+    }
+    .field input.invalid,
+    .field select.invalid,
+    .field textarea.invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(217,64,64,0.12);
+    }
+    .field-err {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--danger);
+      margin-top: 0.35rem;
+    }
+    .field.bad .field-err { display: block; }
+
+    ::placeholder { color: var(--muted); opacity: 1; }
+
+    /* ── Consent ── */
+    .consent-wrap {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.25s ease;
+      margin-bottom: 0;
+    }
+    .consent-wrap.open {
+      max-height: 200px;
+      margin-bottom: 1.25rem;
+    }
+    .consent-box {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0;
+      transition: border-color 0.15s;
+    }
+    .consent-box.invalid { border-color: var(--danger); }
+    .consent-box input[type=checkbox] {
+      margin-top: 0.18rem;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .consent-box label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.55;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+    }
+    .consent-box label a { color: var(--primary); text-decoration: none; }
+    .consent-box label a:hover { text-decoration: underline; }
+    .consent-err {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--danger);
+      margin-top: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    .consent-err.show { display: block; }
+
+    /* ── Submit ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .btn-submit:hover  { filter: brightness(1.08); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ── Error banner ── */
+    .error-banner {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      background: var(--danger-bg);
+      border: 1px solid var(--danger);
+      color: #f5a0a0;
+      font-size: 0.88rem;
+    }
+    .error-banner.show { display: block; }
+
+    /* ── Success ── */
+    .success-card { display: none; text-align: center; padding: 0.5rem 0; }
+    .success-card.show { display: block; }
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--success-bg);
+      border: 2px solid var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 1.8rem;
+      color: #7ecc5c;
+    }
+    .success-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .success-card p  { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+    .success-card p + p { margin-top: 0.3rem; }
+    .email-note {
+      margin-top: 1.25rem;
+      padding: 0.65rem 1rem;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .email-note strong { color: var(--text); }
+
+    /* ── Footer ── */
+    .page-footer {
+      margin-top: 1.5rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .page-footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="wordmark">InsureNXT <span>/ KI-Posteingang</span></div>
+    <div class="tagline">Falleinreichung</div>
+  </header>
+
+  <div class="card">
+
+    <div class="avatar-wrap" id="avatar-wrap">
+      <div class="avatar" id="avatar">?</div>
+    </div>
+
+    <form id="form" novalidate>
+
+      <div class="field" id="f-name">
+        <label for="i-name">Ihr Name</label>
+        <input type="text" id="i-name" name="name"
+               placeholder="Vorname Nachname" autocomplete="name">
+        <div class="field-err">Bitte geben Sie Ihren Namen ein (mind. 2 Zeichen).</div>
+      </div>
+
+      <div class="field" id="f-cat">
+        <label for="i-cat">Schadensart</label>
+        <select id="i-cat" name="category">
+          <option value="">— Bitte wählen —</option>
+          <option>KFZ-Schaden</option>
+          <option>Hausrat-Schaden</option>
+          <option>Haftpflicht</option>
+          <option>Krankenversicherung</option>
+          <option>Kündigung</option>
+          <option>Kundenanfrage</option>
+          <option>Lebensversicherung</option>
+        </select>
+        <div class="field-err">Bitte wählen Sie eine Schadensart aus.</div>
+      </div>
+
+      <div class="field" id="f-desc">
+        <label for="i-desc">Was ist passiert?</label>
+        <textarea id="i-desc" name="description"
+          placeholder="Beschreiben Sie Ihr Anliegen so konkret wie möglich — je mehr Details, desto besser kann unser KI-System helfen."></textarea>
+        <div class="field-err">Bitte schildern Sie Ihren Fall (mind. 20 Zeichen).</div>
+      </div>
+
+      <div class="field" id="f-email">
+        <label for="i-email">E-Mail <span class="opt">(optional — für Statusbenachrichtigungen)</span></label>
+        <input type="email" id="i-email" name="email"
+               placeholder="ihre@email.de" autocomplete="email" inputmode="email">
+        <div class="field-err">Bitte geben Sie eine gültige E-Mail-Adresse ein.</div>
+      </div>
+
+      <div class="consent-wrap" id="consent-wrap">
+        <div class="consent-box" id="consent-box">
+          <input type="checkbox" id="i-consent" name="consent">
+          <label for="i-consent">
+            Ich bin einverstanden, dass meine E-Mail-Adresse von bitside GmbH gespeichert und
+            ausschließlich zur Benachrichtigung über den Status dieses Anliegens verwendet wird.
+            Diese Einwilligung kann ich jederzeit widerrufen.
+            Weitere Informationen finden Sie in unserer
+            <a href="https://bitside.de/impressum" target="_blank" rel="noopener">Datenschutzerklärung</a>.
+          </label>
+        </div>
+      </div>
+      <div class="consent-err" id="consent-err">
+        Bitte stimmen Sie der Verarbeitung Ihrer E-Mail-Adresse zu, um fortzufahren.
+      </div>
+
+      <button type="submit" class="btn-submit" id="btn">Fall einreichen</button>
+      <div class="error-banner" id="err-banner"></div>
+
+    </form>
+
+    <div class="success-card" id="success">
+      <div class="success-icon">✓</div>
+      <h2 id="s-name"></h2>
+      <p>Ihr Fall wurde erfolgreich eingereicht.</p>
+      <p>Unser KI-System nimmt ihn jetzt in die Warteschlange auf.</p>
+      <div class="email-note" id="s-email-note">
+        Wir benachrichtigen Sie unter <strong id="s-email"></strong> über den Fortschritt.
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="page-footer">
+    <a href="https://bitside.de/impressum" target="_blank" rel="noopener">Impressum &amp; Datenschutz</a>
+    &nbsp;·&nbsp; bitside GmbH
+  </footer>
+
+  <script src="submit.js"></script>
+  <script>
+    // ── Avatar ──────────────────────────────────────────────────────────────
+    const COLORS = ['#3B7DD8','#B45DB4','#2EA87A','#E07B39','#D44C4C','#6B6BD8'];
+    function pickColor(name) {
+      let h = 0;
+      for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+      return COLORS[Math.abs(h) % COLORS.length];
+    }
+    const avatarEl = document.getElementById('avatar');
+    document.getElementById('i-name').addEventListener('input', function () {
+      const v = this.value.trim();
+      if (v.length) {
+        avatarEl.textContent = v[0].toUpperCase();
+        avatarEl.style.background = pickColor(v);
+        avatarEl.classList.add('filled');
+      } else {
+        avatarEl.textContent = '?';
+        avatarEl.style.background = '';
+        avatarEl.classList.remove('filled');
+      }
+    });
+
+    // ── Dynamic placeholders ────────────────────────────────────────────────
+    const PH = {
+      'KFZ-Schaden':        'Mein Fahrzeug wurde letzte Woche auf einem Parkplatz beschädigt. Der Verursacher hat einen Zettel hinterlassen…',
+      'Hausrat-Schaden':    'Bei dem Sturm letzte Nacht ist ein Baum auf unser Dach gefallen und hat mehrere Dachziegel beschädigt…',
+      'Haftpflicht':        'Mein Hund hat beim Spaziergang einen Radfahrer erschreckt, der daraufhin gestürzt ist und sich verletzt hat…',
+      'Krankenversicherung':'Nach meiner Operation wurden mir die Kosten für die Reha nicht erstattet, obwohl diese laut Vertrag gedeckt sein sollten…',
+      'Kündigung':          'Ich möchte meinen Kfz-Versicherungsvertrag zum Ende der Laufzeit kündigen und bitte um Bestätigung der Kündigung…',
+      'Kundenanfrage':      'Ich bin unsicher, ob mein aktueller Vertrag auch Schäden durch Naturereignisse wie Überschwemmungen abdeckt…',
+      'Lebensversicherung': 'Ich möchte den Begünstigten meiner Lebensversicherungspolice ändern und bitte um Informationen zum Ablauf…',
+    };
+    const descEl = document.getElementById('i-desc');
+    document.getElementById('i-cat').addEventListener('change', function () {
+      descEl.placeholder = PH[this.value] ||
+        'Beschreiben Sie Ihr Anliegen so konkret wie möglich — je mehr Details, desto besser kann unser KI-System helfen.';
+    });
+
+    // ── Consent show/hide ───────────────────────────────────────────────────
+    const consentWrap = document.getElementById('consent-wrap');
+    const consentBox  = document.getElementById('consent-box');
+    const consentErr  = document.getElementById('consent-err');
+    const emailEl     = document.getElementById('i-email');
+    emailEl.addEventListener('input', function () {
+      const show = this.value.trim().length > 0;
+      consentWrap.classList.toggle('open', show);
+      if (!show) {
+        document.getElementById('i-consent').checked = false;
+        consentBox.classList.remove('invalid');
+        consentErr.classList.remove('show');
+      }
+    });
+
+    // ── Validation helpers ──────────────────────────────────────────────────
+    function markBad(fieldId, el) {
+      el.classList.add('invalid');
+      document.getElementById(fieldId).classList.add('bad');
+    }
+    function clearAll() {
+      ['f-name','f-cat','f-desc','f-email'].forEach(id => {
+        const f = document.getElementById(id);
+        f.classList.remove('bad');
+        f.querySelector('input,select,textarea').classList.remove('invalid');
+      });
+      consentBox.classList.remove('invalid');
+      consentErr.classList.remove('show');
+      document.getElementById('err-banner').classList.remove('show');
+    }
+
+    // ── Submit ──────────────────────────────────────────────────────────────
+    const CONSENT_TEXT    = 'Ich bin einverstanden, dass meine E-Mail-Adresse von bitside GmbH gespeichert und ausschließlich zur Benachrichtigung über den Status dieses Anliegens verwendet wird. Diese Einwilligung kann ich jederzeit widerrufen.';
+    const CONSENT_VERSION = '1.0';
+
+    document.getElementById('form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearAll();
+
+      const nameEl     = document.getElementById('i-name');
+      const catEl      = document.getElementById('i-cat');
+      const consentChk = document.getElementById('i-consent');
+
+      const name  = nameEl.value.trim();
+      const cat   = catEl.value;
+      const desc  = descEl.value.trim();
+      const email = emailEl.value.trim();
+      let ok = true;
+
+      if (name.length < 2)  { markBad('f-name',  nameEl);  ok = false; }
+      if (!cat)              { markBad('f-cat',   catEl);   ok = false; }
+      if (desc.length < 20) { markBad('f-desc',  descEl);  ok = false; }
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        markBad('f-email', emailEl); ok = false;
+      }
+      if (email && !consentChk.checked) {
+        consentBox.classList.add('invalid');
+        consentErr.classList.add('show');
+        ok = false;
+      }
+      if (!ok) return;
+
+      const now  = new Date().toISOString();
+      const id   = Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      const payload = {
+        id,
+        submittedAt:     now,
+        name,
+        avatarInitial:   name[0].toUpperCase(),
+        avatarColor:     pickColor(name),
+        caseCategory:    cat,
+        caseDescription: desc,
+        email:           email || null,
+        consent: email ? { given: true, text: CONSENT_TEXT, version: CONSENT_VERSION, timestamp: now } : null,
+      };
+
+      const btn = document.getElementById('btn');
+      btn.disabled = true;
+      btn.textContent = 'Wird gesendet…';
+
+      try {
+        await uploadSubmission(payload);
+        document.getElementById('form').style.display = 'none';
+        document.getElementById('avatar-wrap').style.display = 'none';
+        const sc = document.getElementById('success');
+        sc.classList.add('show');
+        document.getElementById('s-name').textContent = 'Vielen Dank, ' + name + '!';
+        if (email) {
+          document.getElementById('s-email').textContent = email;
+          document.getElementById('s-email-note').style.display = 'block';
+        } else {
+          document.getElementById('s-email-note').style.display = 'none';
+        }
+      } catch (err) {
+        const banner = document.getElementById('err-banner');
+        banner.textContent = 'Das Einreichen ist leider fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.';
+        banner.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Fall einreichen';
+      }
+    });
+  </script>
+</body>
+</html>
