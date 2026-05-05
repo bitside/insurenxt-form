@@ -93,7 +93,19 @@
     }
 
     /* ── Avatar ── */
-    .avatar-wrap { display: flex; justify-content: center; margin-bottom: 1.75rem; }
+    .avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; justify-content: center; margin-bottom: 1.75rem; }
+    .color-swatches { display: none; gap: 0.5rem; justify-content: center; }
+    .color-swatches.show { display: flex; }
+    .swatch {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: #fff; transform: scale(1.15); }
     .avatar {
       width: 72px;
       height: 72px;
@@ -308,6 +320,7 @@
 
     <div class="avatar-wrap" id="avatar-wrap">
       <div class="avatar" id="avatar">?</div>
+      <div class="color-swatches" id="color-swatches"></div>
     </div>
 
     <form id="form" novalidate>
@@ -395,18 +408,44 @@
       for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
       return COLORS[Math.abs(h) % COLORS.length];
     }
-    const avatarEl = document.getElementById('avatar');
-    document.getElementById('i-name').addEventListener('input', function () {
-      const v = this.value.trim();
-      if (v.length) {
-        avatarEl.textContent = v[0].toUpperCase();
-        avatarEl.style.background = pickColor(v);
-        avatarEl.classList.add('filled');
-      } else {
+    const avatarEl   = document.getElementById('avatar');
+    const swatchesEl = document.getElementById('color-swatches');
+    let selectedColor = null;
+
+    COLORS.forEach(c => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'swatch';
+      btn.style.background = c;
+      btn.dataset.color = c;
+      btn.addEventListener('click', () => {
+        selectedColor = c;
+        updateAvatar(document.getElementById('i-name').value.trim());
+      });
+      swatchesEl.appendChild(btn);
+    });
+
+    function updateAvatar(name) {
+      if (!name.length) {
         avatarEl.textContent = '?';
         avatarEl.style.background = '';
         avatarEl.classList.remove('filled');
+        swatchesEl.classList.remove('show');
+        selectedColor = null;
+        return;
       }
+      const color = selectedColor ?? pickColor(name);
+      avatarEl.textContent = name[0].toUpperCase();
+      avatarEl.style.background = color;
+      avatarEl.classList.add('filled');
+      swatchesEl.classList.add('show');
+      swatchesEl.querySelectorAll('.swatch').forEach(s =>
+        s.classList.toggle('active', s.dataset.color === color)
+      );
+    }
+
+    document.getElementById('i-name').addEventListener('input', function () {
+      updateAvatar(this.value.trim());
     });
 
     // ── Dynamic placeholders ────────────────────────────────────────────────
@@ -494,7 +533,7 @@
         submittedAt:     now,
         name,
         avatarInitial:   name[0].toUpperCase(),
-        avatarColor:     pickColor(name),
+        avatarColor:     selectedColor ?? pickColor(name),
         caseCategory:    cat,
         caseDescription: desc,
         email:           email || null,
