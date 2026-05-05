@@ -23,8 +23,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Inject build-time secrets into form JS
+        env:
+          S3_UPLOAD_BASE_URL: ${{ secrets.S3_UPLOAD_BASE_URL }}
         run: |
-          sed -i "s|__S3_UPLOAD_BASE_URL__|${{ secrets.S3_UPLOAD_BASE_URL }}|g" submit.js
+          python3 -c "
+          import os, pathlib
+          f = pathlib.Path('submit.js')
+          f.write_text(f.read_text().replace('__S3_UPLOAD_BASE_URL__', os.environ['S3_UPLOAD_BASE_URL']))
+          "
 
       - uses: actions/configure-pages@v5
 
